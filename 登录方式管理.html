@@ -524,6 +524,159 @@
         }
         .edit-modal-overlay.active { display: flex; }
 
+        /* ===== 编辑弹框 ===== */
+        .modal {
+            background-color: #2d2d2d;
+            border-radius: 6px;
+            width: 480px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+            border: 1px solid #444;
+        }
+
+        .modal-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #444;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #e0e0e0;
+        }
+
+        .modal-close {
+            font-size: 20px;
+            color: #777;
+            cursor: pointer;
+            line-height: 1;
+            transition: color 0.2s;
+        }
+
+        .modal-close:hover {
+            color: #e0e0e0;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #444;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* ===== 自定义多选下拉 ===== */
+        .multi-select-dropdown {
+            position: relative;
+            width: 100%;
+        }
+
+        .multi-select-trigger {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            background-color: #363636;
+            border: 1px solid #444;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-height: 42px;
+        }
+
+        .multi-select-trigger:hover {
+            border-color: #666;
+        }
+
+        .multi-select-trigger.open {
+            border-color: #888;
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        .multi-select-placeholder {
+            font-size: 13px;
+            color: #999;
+        }
+
+        .multi-select-placeholder.has-value {
+            color: #d0d0d0;
+        }
+
+        .multi-select-arrow {
+            font-size: 12px;
+            color: #888;
+            transition: transform 0.2s;
+        }
+
+        .multi-select-arrow.open {
+            transform: rotate(180deg);
+        }
+
+        .multi-select-options {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: #363636;
+            border: 1px solid #888;
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            z-index: 10;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .multi-select-options.open {
+            display: block;
+        }
+
+        .multi-select-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            cursor: pointer;
+            transition: background-color 0.15s;
+            font-size: 13px;
+            color: #d0d0d0;
+            border-bottom: 1px solid #3d3d3d;
+            user-select: none;
+        }
+
+        .multi-select-option:last-child {
+            border-bottom: none;
+        }
+
+        .multi-select-option:hover {
+            background-color: #444;
+        }
+
+        .multi-select-option input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #67c23a;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .multi-option-icon {
+            font-size: 14px;
+            color: #aaa;
+            flex-shrink: 0;
+            width: 18px;
+            text-align: center;
+        }
+
         /* ===== 图形验证码弹框 ===== */
         .captcha-modal-overlay {
             display: none;
@@ -1427,11 +1580,24 @@
                 </div>
                 <div class="form-group">
                     <label class="form-group-label"><span class="required" style="color:#f56c6c;">* </span>登录方式</label>
-                    <select class="form-select" id="editLoginMethods" multiple style="height:120px;">
-                        <option value="sms">短信验证码登录</option>
-                        <option value="password">密码登录</option>
-                    </select>
-                    <div style="font-size:12px;color:#888;margin-top:6px;">按住 Ctrl 可多选，至少选择一种登录方式</div>
+                    <div class="multi-select-dropdown" id="editDropdown">
+                        <div class="multi-select-trigger" onclick="toggleDropdown()">
+                            <span class="multi-select-placeholder" id="editPlaceholder">请选择登录方式</span>
+                            <span class="multi-select-arrow">&#9662;</span>
+                        </div>
+                        <div class="multi-select-options" id="editOptions">
+                            <label class="multi-select-option">
+                                <input type="checkbox" value="sms" onchange="updateSelected()">
+                                <span class="multi-option-icon">&#9993;</span>
+                                <span>短信验证码登录</span>
+                            </label>
+                            <label class="multi-select-option">
+                                <input type="checkbox" value="password" onchange="updateSelected()">
+                                <span class="multi-option-icon">&#128274;</span>
+                                <span>密码登录</span>
+                            </label>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -1494,34 +1660,81 @@
             ['sms'],
             ['sms', 'password']
         ];
+        var currentEditIndex = -1;
 
         function openEditModal(index) {
+            currentEditIndex = index;
             document.getElementById('editSysName').value = editSysNames[index];
-            var sel = document.getElementById('editLoginMethods');
-            for (var i = 0; i < sel.options.length; i++) {
-                sel.options[i].selected = editSysMethods[index].indexOf(sel.options[i].value) !== -1;
-            }
+            var checkboxes = document.querySelectorAll('#editOptions input[type="checkbox"]');
+            var labels = { sms: '短信验证码登录', password: '密码登录' };
+            checkboxes.forEach(function(cb) {
+                cb.checked = editSysMethods[index].indexOf(cb.value) !== -1;
+            });
+            updateSelected();
+            closeDropdown();
             document.getElementById('editModal').classList.add('active');
         }
 
         function closeEditModal() {
             document.getElementById('editModal').classList.remove('active');
+            closeDropdown();
         }
 
         document.getElementById('editModal').addEventListener('click', function(e) {
             if (e.target === this) closeEditModal();
         });
 
-        function saveEdit() {
-            var sel = document.getElementById('editLoginMethods');
-            var selected = [];
-            for (var i = 0; i < sel.options.length; i++) {
-                if (sel.options[i].selected) selected.push(sel.options[i].value);
+        function toggleDropdown() {
+            var opts = document.getElementById('editOptions');
+            var trigger = document.querySelector('.multi-select-trigger');
+            var arrow = document.querySelector('.multi-select-arrow');
+            var isOpen = opts.classList.contains('open');
+            if (isOpen) {
+                closeDropdown();
+            } else {
+                opts.classList.add('open');
+                trigger.classList.add('open');
+                arrow.classList.add('open');
             }
+        }
+
+        function closeDropdown() {
+            var opts = document.getElementById('editOptions');
+            var trigger = document.querySelector('.multi-select-trigger');
+            var arrow = document.querySelector('.multi-select-arrow');
+            if (opts) opts.classList.remove('open');
+            if (trigger) trigger.classList.remove('open');
+            if (arrow) arrow.classList.remove('open');
+        }
+
+        function updateSelected() {
+            var checkboxes = document.querySelectorAll('#editOptions input[type="checkbox"]');
+            var selected = [];
+            var labels = { sms: '短信验证码登录', password: '密码登录' };
+            checkboxes.forEach(function(cb) {
+                if (cb.checked) selected.push(labels[cb.value]);
+            });
+            var placeholder = document.getElementById('editPlaceholder');
+            if (selected.length > 0) {
+                placeholder.textContent = selected.join('、');
+                placeholder.classList.add('has-value');
+            } else {
+                placeholder.textContent = '请选择登录方式';
+                placeholder.classList.remove('has-value');
+            }
+        }
+
+        function saveEdit() {
+            var checkboxes = document.querySelectorAll('#editOptions input[type="checkbox"]');
+            var selected = [];
+            checkboxes.forEach(function(cb) {
+                if (cb.checked) selected.push(cb.value);
+            });
             if (selected.length === 0) {
                 alert('请至少选择一种登录方式');
                 return;
             }
+            editSysMethods[currentEditIndex] = selected;
             closeEditModal();
         }
 
