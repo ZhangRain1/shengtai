@@ -1160,10 +1160,10 @@
     <div class="main-container">
         <!-- 左侧菜单 -->
         <div class="sidebar">
-            <div class="menu-item menu-level-1">系统设置</div>
-            <div class="menu-level-2 active" onclick="switchPage(0)" id="menuPage0">登录管理</div>
+            <div class="menu-item menu-level-1" style="display:none;">系统设置</div>
+            <div class="menu-level-2" style="display:none;" onclick="switchPage(0)" id="menuPage0">登录管理</div>
             <div class="menu-item menu-level-1">PC端登录</div>
-            <div class="menu-level-2" onclick="switchPage(1)" id="menuPage1">PC端登录注册统一样式</div>
+            <div class="menu-level-2 active" onclick="switchPage(1)" id="menuPage1">PC端登录注册统一样式</div>
             <div class="menu-item menu-level-1">移动端</div>
             <div class="menu-level-2" onclick="switchPage(2)" id="menuPage2">移动端登录注册</div>
         </div>
@@ -1172,11 +1172,11 @@
         <div class="content-area">
             <!-- 标签栏 -->
             <div class="page-tags">
-                <span class="tag active" id="tagPage0" onclick="switchPage(0)">
+                <span class="tag" id="tagPage0" onclick="switchPage(0)" style="display:none;">
                     登录管理
                     <span class="tag-close">&times;</span>
                 </span>
-                <span class="tag" id="tagPage1" onclick="switchPage(1)">
+                <span class="tag active" id="tagPage1" onclick="switchPage(1)">
                     PC端登录注册统一样式
                     <span class="tag-close">&times;</span>
                 </span>
@@ -1187,7 +1187,7 @@
             </div>
 
             <!-- ===== 页面1：登录管理 ===== -->
-            <div class="page-view active" id="pageView0">
+            <div class="page-view" id="pageView0">
                 <div class="info-tip">
                     <span class="tip-icon">&#9432;</span>
                     <span>管理各系统的登录方式配置，点击编辑可修改各系统的可用登录方式。修改后将即时生效，请谨慎操作。</span>
@@ -1245,7 +1245,7 @@
             </div>
 
             <!-- ===== 页面2：PC端登录注册统一样式 ===== -->
-            <div class="page-view" id="pageView1">
+            <div class="page-view active" id="pageView1">
                 <div class="dialog-grid">
 
                     <!-- 1. 注册 -->
@@ -1272,8 +1272,6 @@
                                     <input type="password" class="form-input" placeholder="请设置密码（8-20位，含字母和数字）">
                                     <span class="pwd-toggle">&#128065;</span>
                                 </div>
-                                <div class="pwd-strength"><div class="pwd-strength-bar"></div><div class="pwd-strength-bar"></div><div class="pwd-strength-bar"></div></div>
-                                <div class="pwd-strength-text">密码强度</div>
                             </div>
                             <div class="form-group">
                                 <label class="form-group-label"><span class="required">*</span>确认密码</label>
@@ -1314,8 +1312,6 @@
                                     <input type="password" class="form-input" placeholder="请设置新密码（8-20位，含字母和数字）">
                                     <span class="pwd-toggle">&#128065;</span>
                                 </div>
-                                <div class="pwd-strength"><div class="pwd-strength-bar"></div><div class="pwd-strength-bar"></div><div class="pwd-strength-bar"></div></div>
-                                <div class="pwd-strength-text">密码强度</div>
                             </div>
                             <div class="form-group">
                                 <label class="form-group-label"><span class="required">*</span>确认新密码</label>
@@ -1406,8 +1402,6 @@
                                     <input type="password" class="form-input" placeholder="请设置新密码（8-20位，含字母和数字）">
                                     <span class="pwd-toggle">&#128065;</span>
                                 </div>
-                                <div class="pwd-strength"><div class="pwd-strength-bar"></div><div class="pwd-strength-bar"></div><div class="pwd-strength-bar"></div></div>
-                                <div class="pwd-strength-text">密码强度</div>
                             </div>
                             <div class="form-group">
                                 <label class="form-group-label"><span class="required">*</span>确认新密码</label>
@@ -1631,7 +1625,7 @@
 
     <script>
         // ===== 页面切换 =====
-        var currentPage = 0;
+        var currentPage = 1;
 
         function switchPage(index) {
             currentPage = index;
